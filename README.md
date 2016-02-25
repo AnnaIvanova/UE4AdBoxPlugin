@@ -1,6 +1,8 @@
 # UE4AdBoxPlugin
 Plugin that adds AdMob interstitial support for Android platform in UE4 blueprints.
 
+For UE4 starting from 4.10.
+
 Plugin adds blocks:
 * PreloadAdInterstitial(AdMobID)
 * ShowAdInterstitial(AdMobID)
