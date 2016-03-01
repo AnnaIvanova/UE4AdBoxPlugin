@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--AdBox plugin additions-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+  <init>
+    <log text="AdColony init"/>
+    <setStringFromProperty result="app_ID" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyAppID" default=""/>
+    <setStringFromProperty result="zone_ID_InterstitialVideo" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyZoneIDInterstitialVideo" default=""/>
+    <setStringFromProperty result="zone_ID_V4VC" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyZoneIDV4VC" default=""/>
+    <log text="AdColony appId: $S(app_ID)"/>
+  </init>
+  <resourceCopies>
+    <copyFile src="$S(PluginDir)/libs/adcolony.jar" dst="$S(BuildDir)/libs/adcolony.jar"/>
+    <copyFile src="$S(PluginDir)/libs/armeabi/libImmEndpointWarpJ.so" dst="$S(BuildDir)/libs/armeabi-v7a/libImmEndpointWarpJ.so"/>
+  </resourceCopies>
+
+  <androidManifestUpdates>
+    <addElements tag="application">
+      <activity android:name="com.jirbo.adcolony.AdColonyOverlay" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+      <activity android:name="com.jirbo.adcolony.AdColonyFullscreen" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+      <activity android:name="com.jirbo.adcolony.AdColonyBrowser" android:configChanges="keyboardHidden|orientation|screenSize" android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" />
+    </addElements>
+  </androidManifestUpdates>
+
+  <proguardAdditions>
+    <insert>
+-dontwarn com.immersion.**
+-dontnote com.immersion.**
+    </insert>   
+  </proguardAdditions>
+  
+  <gameActivityImportAdditions>
+		<insert>
+			import com.jirbo.adcolony.*;
+		</insert>
+	</gameActivityImportAdditions>
+  
+  <gameActivityOnCreateAdditions>
+    <log text="AdColony, java OnCreate. app_ID: $S(app_ID)"/>
+    <insert>
+      AdColony.configure(this, "version:1.0,store:google", </insert><insertValue value="&quot;$S(app_ID)&quot;, &quot;$S(zone_ID_InterstitialVideo)&quot;, &quot;$S(zone_ID_V4VC)&quot;"/><insert>); // "app185a7e71e1714831a49ec7", "vz06e8c32a037749699e7050", "vz1fd5a8b2bf6841a0a4b826");
+      
+      AdColonyV4VCListener listener = new AdColonyV4VCListener()
+      {
+        public void onAdColonyV4VCReward(AdColonyV4VCReward reward)
+        {          
+          if(reward.success())
+          {
+            rewardVideoResult = 1;
+          }          
+        }
+      };
+
+      AdColony.addV4VCListener(listener);  
+    </insert>
+  </gameActivityOnCreateAdditions>
+  
+  <gameActivityOnPauseAdditions>
+    <insert>
+        AdColony.pause();
+    </insert>
+  </gameActivityOnPauseAdditions>
+
+	<gameActivityOnResumeAdditions>
+    <insert>
+        AdColony.resume( this );
+    </insert>
+	</gameActivityOnResumeAdditions>
+  
+	<gameActivityClassAdditions>
+		<insert>
+      int rewardVideoResult = -1;
+      
+      public void AndroidThunkJava_ShowAdColonyV4VC()
+      {
+        rewardVideoResult = -1;
+        
+         AdColonyAdListener listenerV4VC = new  AdColonyAdListener()
+        {
+          public void onAdColonyAdStarted( AdColonyAd ad )
+          {
+            
+          }
+          public void onAdColonyAdAttemptFinished( AdColonyAd ad )
+          {
+            if (ad.skipped() || ad.notShown() || ad.canceled())
+            {
+              rewardVideoResult = 0;
+            }
+          }
+        }; 
+      
+        AdColonyV4VCAd ad = new AdColonyV4VCAd().withListener( listenerV4VC );
+        ad.show();
+      }
+      
+      public int AndroidThunkJava_GetRewardResultAdColonyV4VC()
+      {
+        int res = rewardVideoResult;
+        rewardVideoResult = -1;
+        return res;
+      }
+      
+      public void AndroidThunkJava_ShowAdColonyInterstitialVideo()
+      {
+        AdColonyVideoAd ad = new AdColonyVideoAd();
+        ad.show();
+      }
+    </insert>
+	</gameActivityClassAdditions>
+  <soLoadLibrary>			
+				<loadLibrary name="ImmEndpointWarpJ" failmsg="AdColony Haptic library was not loaded!" />		
+	</soLoadLibrary>
+</root>
