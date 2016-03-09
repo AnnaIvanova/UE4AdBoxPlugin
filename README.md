@@ -42,3 +42,28 @@ Please add the following strings to DefaultEngine.ini.
 Please note that codes in [/Script/AndroidRuntimeSettings.AndroidRuntimeSettings] section are only for testing. They are taken from AdColony examples.
 
 Many thanks to Timberlake for this video https://www.youtube.com/watch?v=NWjnPNIWX1s  
+
+## Plugin Installation
+
+There are two ways to use the plugin:
+
+* In Engine
+* In Game
+
+If you are using the plugin in the Engine your steps should be:
+
+1. Download UE4 (version 4.10+) from github and run setup.bat https://github.com/EpicGames/UnrealEngine#windows
+1. Copy AdBox folder to the Engine's Plugin folder
+1. Regenerate and rebuild the Engine
+1. Switch Unreal Engine version of your project to this custom version
+1. Start Editor with your project
+
+If you are using the plugin in the Game your steps should be:
+
+1. Game should be a C++ code project
+1. Copy AdBox folder to the Game's Plugin folder
+1. Generate Visual Studio project files
+1. Build your Game
+1. Start Editor with your project
+
+You can find details about UE4 plugins here: https://docs.unrealengine.com/latest/INT/Programming/Plugins/index.html
