@@ -3,9 +3,9 @@
 <root xmlns:android="http://schemas.android.com/apk/res/android">
   <init>
     <log text="AdColony init"/>
-    <setStringFromProperty result="app_ID" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyAppID" default=""/>
-    <setStringFromProperty result="zone_ID_InterstitialVideo" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyZoneIDInterstitialVideo" default=""/>
-    <setStringFromProperty result="zone_ID_V4VC" ini="Engine" section="/Script/AndroidRuntimeSettings.AndroidRuntimeSettings" property="AdColonyZoneIDV4VC" default=""/>
+    <setStringFromProperty result="app_ID" ini="Engine" section="Advertisement" property="AdColonyAppID" default=""/>
+    <setStringFromProperty result="zone_ID_InterstitialVideo" ini="Engine" section="Advertisement" property="AdColonyZoneIDInterstitialVideo" default=""/>
+    <setStringFromProperty result="zone_ID_V4VC" ini="Engine" section="Advertisement" property="AdColonyZoneIDV4VC" default=""/>
     <log text="AdColony appId: $S(app_ID)"/>
   </init>
   <resourceCopies>
@@ -39,18 +39,7 @@
     <insert>
       AdColony.configure(this, "version:1.0,store:google", </insert><insertValue value="&quot;$S(app_ID)&quot;, &quot;$S(zone_ID_InterstitialVideo)&quot;, &quot;$S(zone_ID_V4VC)&quot;"/><insert>); // "app185a7e71e1714831a49ec7", "vz06e8c32a037749699e7050", "vz1fd5a8b2bf6841a0a4b826");
       
-      AdColonyV4VCListener listener = new AdColonyV4VCListener()
-      {
-        public void onAdColonyV4VCReward(AdColonyV4VCReward reward)
-        {          
-          if(reward.success())
-          {
-            rewardVideoResult = 1;
-          }          
-        }
-      };
-
-      AdColony.addV4VCListener(listener);  
+      AdColony.addV4VCListener(listenerAdColonyV4VC);  
     </insert>
   </gameActivityOnCreateAdditions>
   
@@ -68,44 +57,62 @@
   
 	<gameActivityClassAdditions>
 		<insert>
-      int rewardVideoResult = -1;
-      
-      public void AndroidThunkJava_ShowAdColonyV4VC()
-      {
-        rewardVideoResult = -1;
-        
-         AdColonyAdListener listenerV4VC = new  AdColonyAdListener()
-        {
-          public void onAdColonyAdStarted( AdColonyAd ad )
-          {
-            
-          }
-          public void onAdColonyAdAttemptFinished( AdColonyAd ad )
-          {
-            if (ad.skipped() || ad.notShown() || ad.canceled())
-            {
-              rewardVideoResult = 0;
-            }
-          }
-        }; 
-      
-        AdColonyV4VCAd ad = new AdColonyV4VCAd().withListener( listenerV4VC );
-        ad.show();
-      }
-      
-      public int AndroidThunkJava_GetRewardResultAdColonyV4VC()
-      {
-        int res = rewardVideoResult;
-        rewardVideoResult = -1;
-        return res;
-      }
-      
-      public void AndroidThunkJava_ShowAdColonyInterstitialVideo()
-      {
-        AdColonyVideoAd ad = new AdColonyVideoAd();
-        ad.show();
-      }
-    </insert>
+			//------------- AdColony Begin
+			public native void nativeOnAdColonyAdStarted(String zone_id, boolean isShown, boolean isNotShown, boolean isCanceled, boolean isNoFill, boolean isSkipped);
+			public native void nativeOnAdColonyAdAttemptFinished(String zone_id, boolean isShown, boolean isNotShown, boolean isCanceled, boolean isNoFill, boolean isSkipped);
+			public native void nativeOnAdColonyV4VCReward(boolean success, String name, int amount);
+			public native void nativeOnAdColonyAdAvailabilityChange(boolean available, String zone_id);
+			
+			private AdColonyAdListener listenerAdColonyAd = new  AdColonyAdListener()
+			{
+				@Override
+				public void onAdColonyAdStarted( AdColonyAd ad )
+				{					
+					nativeOnAdColonyAdStarted(ad.getZoneID(), ad.shown(), ad.notShown(), ad.canceled(), ad.noFill(), ad.skipped());
+				}
+				@Override
+				public void onAdColonyAdAttemptFinished( AdColonyAd ad )
+				{
+					nativeOnAdColonyAdAttemptFinished(ad.getZoneID(), ad.shown(), ad.notShown(), ad.canceled(), ad.noFill(), ad.skipped());
+				}
+			};
+			
+			AdColonyV4VCListener listenerAdColonyV4VC = new AdColonyV4VCListener()
+			{
+				@Override
+				public void onAdColonyV4VCReward(AdColonyV4VCReward reward)
+				{          
+					nativeOnAdColonyV4VCReward(reward.success(), reward.name(), reward.amount());
+				}
+			};
+			
+			AdColonyAdAvailabilityListener listenerAdColonyAdAvailability = new AdColonyAdAvailabilityListener()
+			{
+				@Override
+				public void onAdColonyAdAvailabilityChange( boolean available, String zone_id )
+				{
+					nativeOnAdColonyAdAvailabilityChange(available, zone_id);
+				}
+			};
+			
+			public void AndroidThunkJava_ShowAdColonyV4VC()
+			{  
+				AdColonyV4VCAd ad = new AdColonyV4VCAd().withListener(listenerAdColonyAd);
+				ad.show();
+			}
+
+			public void AndroidThunkJava_ShowAdColonyInterstitialVideo()
+			{
+				AdColonyVideoAd ad = new AdColonyVideoAd().withListener(listenerAdColonyAd);
+				ad.show();
+			}
+			
+			public String AndroidThunkJava_AdColonyStatusForZone(String zone_id)
+			{
+				return AdColony.statusForZone(zone_id);
+			}
+			//------------- AdColony End
+		</insert>
 	</gameActivityClassAdditions>
   <soLoadLibrary>			
 				<loadLibrary name="ImmEndpointWarpJ" failmsg="AdColony Haptic library was not loaded!" />		

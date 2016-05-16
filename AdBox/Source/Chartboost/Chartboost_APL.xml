@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--AdBox plugin additions-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+  <init>
+	<log text="Chartboost init"/>
+    <setStringFromProperty result="app_ID" ini="Engine" section="Advertisement" property="ChartboostAppID" default=""/>
+	<setStringFromProperty result="app_signature" ini="Engine" section="Advertisement" property="ChartboostAppSignature" default=""/>
+  </init>
+  <resourceCopies>
+    <copyFile src="$S(PluginDir)/libs/chartboost.jar" dst="$S(BuildDir)/libs/chartboost.jar"/>
+    <!--<copyFile src="$S(PluginDir)/libs/armeabi/libImmEndpointWarpJ.so" dst="$S(BuildDir)/libs/armeabi-v7a/libImmEndpointWarpJ.so"/> -->
+  </resourceCopies>
+
+  <androidManifestUpdates>
+    <addElements tag="application">
+	<activity android:name="com.chartboost.sdk.CBImpressionActivity"
+               android:excludeFromRecents="true"
+               android:hardwareAccelerated="true"
+               android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+               android:configChanges="keyboardHidden|orientation|screenSize" />
+    </addElements>
+  </androidManifestUpdates>
+
+  <proguardAdditions>
+    <insert>
+-keep class com.chartboost.** { *; }
+-dontwarn android.app.Activity
+    </insert>   
+  </proguardAdditions>
+  
+  <gameActivityImportAdditions>
+		<insert>
+			import com.chartboost.sdk.Chartboost;
+			import com.chartboost.sdk.CBLocation;
+			import com.chartboost.sdk.ChartboostDelegate;
+			import com.chartboost.sdk.Libraries.CBLogging.Level;
+			import com.chartboost.sdk.Model.CBError.CBClickError;
+			import com.chartboost.sdk.Model.CBError.CBImpressionError;
+			import com.chartboost.sdk.Tracking.CBAnalytics;
+			import com.chartboost.sdk.CBImpressionActivity;
+		</insert>
+	</gameActivityImportAdditions>
+  
+  <gameActivityOnCreateAdditions>
+    <log text="Chartboost, java OnCreate. app_ID: $S(app_ID)"/>
+    <insert>
+		Chartboost.startWithAppId(this, </insert><insertValue value="&quot;$S(app_ID)&quot;, &quot;$S(app_signature)&quot;"/><insert>);	//Chartboost.startWithAppId(this, "56f936b25b14536d9188a7cf", "8eb8b3ac5b62f43758bb590daa6aae5e78577261");
+		Chartboost.setDelegate(cb_delegate );	
+		Chartboost.onCreate(this);			
+    </insert>
+  </gameActivityOnCreateAdditions>
+  
+  <gameActivityOnPauseAdditions>
+    <insert>
+		Chartboost.onPause(this);	
+    </insert>
+  </gameActivityOnPauseAdditions>
+
+	<gameActivityOnResumeAdditions>
+    <insert>       
+		Chartboost.onResume(this);		
+    </insert>
+	</gameActivityOnResumeAdditions>
+	
+	<gameActivityOnStartAdditions>
+		<insert>			
+			Chartboost.onStart(this);			
+		</insert>
+	</gameActivityOnStartAdditions>
+
+	<gameActivityOnStopAdditions>
+		<insert>			
+			Chartboost.onStop(this);
+		</insert>
+	</gameActivityOnStopAdditions>
+	
+	<gameActivityOnDestroyAdditions>
+		<insert>			
+			Chartboost.onDestroy(this);			
+		</insert>
+	</gameActivityOnDestroyAdditions>
+
+	<gameActivityClassAdditions>
+		<insert>
+      //------------- Chartboost Begin
+			@Override
+			public void onBackPressed() {
+				if (Chartboost.onBackPressed())
+					return;
+				else
+					super.onBackPressed();
+			}
+			
+			public native void nativeDidDisplayInterstitial(String location);
+			public native void nativeDidCacheInterstitial(String location);
+			public native void nativeDidFailToLoadInterstitial(String location, String error);
+			
+			public void AndroidThunkJava_CacheChartboostInterstitial(String location)
+			{				
+				Chartboost.cacheInterstitial(location);
+			}
+			
+			public boolean AndroidThunkJava_HasInterstitial(String location)
+			{
+				return Chartboost.hasInterstitial(location);
+			}
+			
+			public void AndroidThunkJava_ShowChartboostInterstitial(String location)
+			{
+				Chartboost.showInterstitial(location);				
+			}
+      						
+			public native void nativeDidCompleteRewardedVideo(String location, int reward);
+			public native void nativeDidCacheRewardedVideo(String location);
+			public native void nativeDidFailToLoadRewardedVideo(String location, String error);
+			public native void nativeDidDismissRewardedVideo(String location);
+			public native void nativeDidCloseRewardedVideo(String location);		
+			
+			public void AndroidThunkJava_CacheChartboostRewardVideo(String location)
+			{
+				Chartboost.cacheRewardedVideo(location);						
+			}
+			
+			public boolean AndroidThunkJava_HasRewardedVideo(String location)
+			{
+				return Chartboost.hasRewardedVideo(location);
+			}
+			
+			public void AndroidThunkJava_ShowChartboostRewardVideo(String location)
+			{				
+				Chartboost.showRewardedVideo(location);				
+			}
+			
+			private ChartboostDelegate cb_delegate = new ChartboostDelegate() {
+				
+				@Override
+				public void didDisplayInterstitial(String location) {
+					nativeDidDisplayInterstitial(location);
+				}
+				
+				@Override
+				public void didCacheInterstitial(String location) {
+					nativeDidCacheInterstitial(location);
+				}
+				
+				@Override
+				public void didFailToLoadInterstitial(String location, CBImpressionError error) {					
+					nativeDidFailToLoadInterstitial(location, error.name());
+				}
+				
+				
+				@Override
+				public void didCompleteRewardedVideo(String location, int reward) {
+					nativeDidCompleteRewardedVideo(location, reward);
+				}
+				
+				@Override
+				public void didCacheRewardedVideo(String location) {
+					nativeDidCacheRewardedVideo(location);
+				}
+				
+				@Override
+				public void didFailToLoadRewardedVideo(String location, CBImpressionError error) {
+					
+					nativeDidFailToLoadRewardedVideo(location, error.name());
+				}
+				
+				@Override
+				public void didDismissRewardedVideo(String location) {
+					
+					nativeDidDismissRewardedVideo(location);
+				}
+				
+				@Override
+				public void didCloseRewardedVideo(String location) {
+					
+					nativeDidCloseRewardedVideo(location);
+				}
+			};					  
+			//------------- Chartboost End
+		</insert>
+	</gameActivityClassAdditions>  
+</root>

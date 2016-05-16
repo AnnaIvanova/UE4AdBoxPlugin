@@ -12,12 +12,17 @@
 	"SupportURL": "",
 	"Modules": [
 		{
-			"Name": "AdMobInterstitial",
+			"Name": "AdMob",
 			"Type": "Runtime",			
 			"LoadingPhase" : "PreDefault"
 		},
 		{
 			"Name": "AdColony",
+			"Type": "Runtime",			
+			"LoadingPhase" : "PreDefault"
+		},
+		{
+			"Name": "Chartboost",
 			"Type": "Runtime",			
 			"LoadingPhase" : "PreDefault"
 		}
