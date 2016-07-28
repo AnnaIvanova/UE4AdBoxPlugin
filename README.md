@@ -59,6 +59,14 @@ Please add the following strings to DefaultEngine.ini.
 
 Please note that codes in [Advertisement] section are only for testing. They are taken from AdColony examples.
 
+Please chech your build.cs file. The following code should be present.
+
+    if (Target.Platform == UnrealTargetPlatform.Android)
+    {
+        PrivateDependencyModuleNames.AddRange(new string[] { "OnlineSubsystemGooglePlay", "AndroidAdvertising" });
+    }
+    PrivateDependencyModuleNames.Add("OnlineSubsystem");
+
 Many thanks to Timberlake for this video https://www.youtube.com/watch?v=NWjnPNIWX1s  
 
 ## Plugin Installation
