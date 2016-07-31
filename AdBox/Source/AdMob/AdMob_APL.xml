@@ -14,7 +14,8 @@
 			private boolean toShowAdInterstitialOnLoad;
       
 			public void AndroidThunkJava_ShowAdInterstitial(String AdMobAdUnitID)
-			{       
+			{   
+       Log.debug("AndroidThunkJava_ShowAdInterstitial: " + AdMobAdUnitID);
 				if((_activity.interstitialAd == null) || (AdMobAdUnitID != _activity.interstitialAd.getAdUnitId()))
         {
           AndroidThunkJava_PreloadAdInterstitial(AdMobAdUnitID);
@@ -29,7 +30,9 @@
 					  @Override
 					  public void run()
 					  {
-						  if(_activity.interstitialAd.isLoaded() == true) _activity.interstitialAd.show(); }
+              Log.debug("AndroidThunkJava_ShowAdInterstitial: run thread - show");
+						  if(_activity.interstitialAd.isLoaded() == true)
+                _activity.interstitialAd.show(); }
 					  });
 				  }
           else
@@ -39,8 +42,9 @@
         }
 			}
       
-      public void AndroidThunkJava_PreloadAdInterstitial(String AdMobAdUnitID)
-      {
+  public void AndroidThunkJava_PreloadAdInterstitial(String AdMobAdUnitID)
+	{
+        Log.debug("AndroidThunkJava_PreloadAdInterstitial: " + AdMobAdUnitID);
         if((_activity.interstitialAd == null) || (AdMobAdUnitID != _activity.interstitialAd.getAdUnitId()))
         {
             toShowAdInterstitialOnLoad = false;
@@ -49,25 +53,35 @@
             interstitialAd = new InterstitialAd(this);
 			      interstitialAd.setAdUnitId(AdMobAdUnitID);
         
-            _activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run()
-                {
-                  interstitialAd.setAdListener(new AdListener() {
+            interstitialAd.setAdListener(new AdListener() {
+              @Override
+	            public void onAdLoaded()
+	            {
+                Log.debug("AndroidThunkJava_PreloadAdInterstitial: onAdLoaded");
+		            if(toShowAdInterstitialOnLoad)
+                {                
+			            _activity.runOnUiThread(new Runnable() {
                     @Override
-	                  public void onAdLoaded()
-	                  {
-		                  if(toShowAdInterstitialOnLoad)
-                      {                
-			                  if(_activity.interstitialAd.isLoaded() == true) _activity.interstitialAd.show();
-                      }                  
-	                  }						
-                  });            
-                  interstitialAd.loadAd(request);
+                    public void run()
+						          {
+                        Log.debug("AndroidThunkJava_PreloadAdInterstitial: run thread - showAd");
+							          if(_activity.interstitialAd.isLoaded() == true)
+								          _activity.interstitialAd.show();
+						          }
+                    });                 
                 }
+              }
             });
-         }
-      }
+            _activity.runOnUiThread(new Runnable() {
+             @Override
+                    public void run(){
+                     Log.debug("AndroidThunkJava_PreloadAdInterstitial: run thread - loadAd");
+                      interstitialAd.loadAd(request);
+                      }
+             });
+            
+        }
+	}
       // --------------- AdMob End
 		</insert>
 	</gameActivityClassAdditions>
