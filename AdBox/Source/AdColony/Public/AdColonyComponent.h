@@ -8,13 +8,13 @@ class UAdColonyComponent : public UActorComponent
    GENERATED_UCLASS_BODY()
 public:
    ~UAdColonyComponent();
-   UFUNCTION(BlueprintCallable, Category = "Plugin|AdBox")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show AdColony V4VC", CompactNodeTitle = "ShowAdColonyV4VC", Keywords = "AdBox Advertisement AdColony"), Category = "__AdBox|AdColony")
    static void ShowAdColonyV4VC();
 
-   UFUNCTION(BlueprintCallable, Category = "Plugin|AdBox")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show AdColony Interstitial Video", CompactNodeTitle = "ShowAdColonyVideo", Keywords = "AdBox Advertisement AdColony"), Category = "__AdBox|AdColony")
    static void ShowAdColonyInterstitialVideo();
 
-   UFUNCTION(BlueprintCallable, Category = "Plugin|AdBox")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show AdColony Status For Zone", CompactNodeTitle = "ShowAdColonyStatus", Keywords = "AdBox Advertisement AdColony"), Category = "__AdBox|AdColony")
    static FString AdColonyStatusForZone(FString zone_id);
 
    DECLARE_DYNAMIC_MULTICAST_DELEGATE_SixParams(FAdColonyAdStartedDelegate, FString, zone_id, bool, isShown, bool, isNotShown, bool, isCanceled, bool, isNoFill, bool, isSkipped);

@@ -13,22 +13,22 @@ public:
  * @param Comment
  * @return Comment
  */
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cache Chartboost Interstitial", CompactNodeTitle = "CacheChartboost", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    void CacheChartboostInterstitial(const FString& location);
 
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Has Chartboost Interstitial", CompactNodeTitle = "HasChartboost", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    bool HasInterstitial(const FString& location);
 
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Chartboost Interstitial", CompactNodeTitle = "ShowChartboost", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    void ShowChartboostInterstitial(const FString& location);
 
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cache Chartboost Rewarded Video", CompactNodeTitle = "CacheChartboostRV", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    void CacheChartboostRewardVideo(const FString& location);
 
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Has Chartboost Rewarded Video", CompactNodeTitle = "HasChartboostRV", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    bool HasRewardedVideo(const FString& location);
 
-   UFUNCTION(BlueprintCallable, Category = "Default")
+   UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Chartboost Rewarded Video", CompactNodeTitle = "ShowChartboostRV", Keywords = "AdBox Advertisement Chartboost"), Category = "__AdBox|Chartboost")
    void ShowChartboostRewardVideo(const FString& location);
 
    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCacheInterstitialDelegate, FString, location);

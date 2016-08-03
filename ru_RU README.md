@@ -1,4 +1,4 @@
-# UE4AdBoxPlugin
+# UE4 AdBox Plugin
 
 Плагин добавляет поддержку межстраничной рекламы **AdMob**, межстраничной видео рекламы и видео рекламы за вознаграждение **AdColony**, а 
 также статичной, видео, видео за вознаграждение от **Chartboost** для Андроид платформ в UE4 Blueprints.
@@ -42,7 +42,7 @@ Events:
 
 Для AdMobID вставте ваш идентификатор рекламного блока(ca-app-pub-################/##########)<br>
 [Project Settings -> Platforms -> Android -> Ad Mob Ad Unit IDs]<br>
-ShowAdInterstitial может быть вызван без PreloadAdInterstitial, но тогда потребуется время, чтобы загрузить данные для межстраничной рекламы(пердзагрузка).
+ShowAdInterstitial может быть вызван без PreloadAdInterstitial, но тогда потребуется время, чтобы загрузить данные для межстраничной рекламы(предзагрузка).
 
 Добавте строки в ваш **DefaultEngine.ini**<br>
 [...\Unreal Projects\имя проекта\Config]<br>
@@ -88,7 +88,7 @@ ChartboostAppSignature=yyyyyyyyyyyyy
 
 ## Если пропал стандартный баннер AdMob:
 * Don't panic
-* Копируем ниже указанный код в файл build.cs ваше проекта<br>
+* Копируем ниже указанный код в файл build.cs вашего проекта<br>
 [...\Unreal Projects\проект\Source\проект\проект.Build.cs]
 ```
 if (Target.Platform == UnrealTargetPlatform.Android)
